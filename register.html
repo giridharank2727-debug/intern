@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - SkillsSprint</title>
+    <style>
+        /* Exact same styles as login.html for consistency */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; transition: background 0.3s, color 0.3s; min-height: 100vh; }
+        
+        body.light { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
+        body.dark { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #e0e0e0; }
+        
+        .container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; }
+        
+        .auth-card { background: white; padding: 3rem 2.5rem; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 100%; max-width: 420px; position: relative; overflow: hidden; }
+        body.dark .auth-card { background: #4a5568; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .auth-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #4299e1, #3182ce); }
+        
+        .auth-header { text-align: center; margin-bottom: 2rem; }
+        .logo { font-size: 2rem; font-weight: bold; background: linear-gradient(45deg, #4299e1, #3182ce); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.5rem; }
+        body.dark .logo { background: linear-gradient(45deg, #63b3ed, #4299e1); }
+        .subtitle { color: #718096; font-size: 1.1rem; }
+        body.dark .subtitle { color: #a0aec0; }
+        
+        .auth-form { display: flex; flex-direction: column; gap: 1.5rem; }
+        .form-group { position: relative; }
+        .form-group input { width: 100%; padding: 1rem 1rem 1rem 3rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 1rem; transition: all 0.3s; background: white; }
+        body.dark .form-group input { background: #2d3748; border-color: #4a5568; color: #e2e8f0; }
+        .form-group input:focus { outline: none; border-color: #4299e1; box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1); }
+        body.dark .form-group input:focus { box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2); }
+        .form-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #a0aec0; font-size: 1.2rem; }
+        body.dark .form-icon { color: #718096; }
+        
+        .btn { padding: 1rem 2rem; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 500; cursor: pointer; transition: all 0.3s; width: 100%; }
+        .btn-primary { background: linear-gradient(45deg, #4299e1, #3182ce); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(66, 153, 225, 0.3); }
+        body.dark .btn-primary { background: linear-gradient(45deg, #63b3ed, #4299e1); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        
+        .message { padding: 1rem; border-radius: 12px; margin-bottom: 1rem; font-weight: 500; }
+        .error { background: #fed7d7; color: #c53030; border: 1px solid #feb2b2; }
+        .success { background: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; }
+        
+        .link { color: #4299e1; text-decoration: none; font-weight: 500; }
+        body.dark .link { color: #63b3ed; }
+        .link:hover { text-decoration: underline; }
+        .switch-link { text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0; }
+        body.dark .switch-link { border-top-color: #4a5568; }
+        
+        .theme-toggle { position: absolute; top: 1rem; right: 1rem; background: none; border: 1px solid #e2e8f0; color: #718096; padding: 0.5rem; border-radius: 50%; cursor: pointer; transition: all 0.3s; font-size: 1.1rem; }
+        body.dark .theme-toggle { border-color: #718096; color: #e2e8f0; }
+        .theme-toggle:hover { background: #4299e1; color: white; border-color: #4299e1; transform: scale(1.1); }
+        
+        .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; margin-right: 0.5rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        @media (max-width: 480px) {
+            .auth-card { padding: 2rem 1.5rem; margin: 1rem; }
+            .logo { font-size: 1.7rem; }
+        }
+    </style>
+</head>
+<body class="light">
+    <div class="container">
+        <div class="auth-card">
+            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+            
+            <div class="auth-header">
+<h1 class="logo">💼 GigIntern</h1>
+                <p class="subtitle">Join the best internship platform</p>
+            </div>
+
+            <div id="message" class="message" style="display: none;"></div>
+
+            <form id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <span class="form-icon">👤</span>
+                    <input type="text" id="name" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <span class="form-icon">📧</span>
+                    <input type="email" id="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <span class="form-icon">🔒</span>
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="registerBtn">
+                    Create Account
+                </button>
+            </form>
+
+            <div class="switch-link">
+                Already have an account? <a href="login.html" class="link">Sign in here</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load saved theme
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.remove('light');
+            document.body.classList.add('dark');
+            document.querySelector('.theme-toggle').textContent = '☀️';
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Fixed JS references
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const btn = document.getElementById('registerBtn');
+            const messageEl = document.getElementById('message');
+
+            // Loading
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-spinner"></span>Creating Account...';
+            messageEl.style.display = 'none';
+
+            try {
+                const res = await fetch('http://localhost:5000/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showMessage('Account created successfully! Redirecting to login...', 'success');
+                    setTimeout(() => window.location.href = 'login.html', 1500);
+                } else {
+                    showMessage(data.message || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please check if server is running.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Create Account';
+            }
+        });
+
+        function showMessage(text, type) {
+            const el = document.getElementById('message');
+            el.textContent = text;
+            el.className = `message ${type}`;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light');
+            document.body.classList.add('dark');
+            document.body.classList.remove('light'); // Fixed toggle
+            const isDark = document.body.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.querySelector('.theme-toggle').textContent = isDark ? '☀️' : '🌙';
+        }
+    </script>
+</body>
+</html>
