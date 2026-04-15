@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | GigIntern</title>
+  <style>
+    :root {
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #111827;
+      background: #f8fafc;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%);
+      color: #111827;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    body.dark {
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+
+    .page {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 3rem;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .brand {
+      font-size: clamp(1.5rem, 2vw, 2.25rem);
+      font-weight: 700;
+      letter-spacing: -0.05em;
+      color: #1d4ed8;
+    }
+
+    body.dark .brand {
+      color: #93c5fd;
+    }
+
+    .topbar p {
+      margin: 0;
+      color: #475569;
+    }
+
+    body.dark .topbar p {
+      color: #cbd5e1;
+    }
+
+    .theme-toggle {
+      border: 0;
+      border-radius: 999px;
+      padding: 0.85rem 1rem;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 1.5rem;
+    }
+
+    .sidebar {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 24px;
+      padding: 1.5rem;
+      display: grid;
+      gap: 0.75rem;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    body.dark .sidebar {
+      background: rgba(15, 23, 42, 0.8);
+      border-color: rgba(71, 85, 105, 0.3);
+    }
+
+    .nav-link {
+      display: block;
+      text-decoration: none;
+      color: #334155;
+      font-weight: 600;
+      padding: 0.9rem 1rem;
+      border-radius: 16px;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-link.active,
+    .nav-link:hover {
+      background: #e0f2fe;
+      color: #1d4ed8;
+    }
+
+    body.dark .nav-link {
+      color: #cbd5e1;
+    }
+
+    body.dark .nav-link.active,
+    body.dark .nav-link:hover {
+      background: rgba(59, 130, 246, 0.18);
+      color: #93c5fd;
+    }
+
+    .panel {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 24px;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      padding: 1.5rem;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06);
+    }
+
+    body.dark .card {
+      background: rgba(15, 23, 42, 0.88);
+      border-color: rgba(71, 85, 105, 0.3);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .stat {
+      padding: 1.3rem;
+      border-radius: 20px;
+      background: #eff6ff;
+      color: #1e3a8a;
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    body.dark .stat {
+      background: rgba(59, 130, 246, 0.14);
+      color: #bfdbfe;
+    }
+
+    .stat strong {
+      font-size: 1.9rem;
+      display: block;
+    }
+
+    .profile-row {
+      display: grid;
+      grid-template-columns: 100px minmax(0, 1fr);
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #2563eb, #6366f1);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    body.dark .avatar {
+      background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+    }
+
+    .search-row {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+    }
+
+    .search-row input {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 0.95rem 1rem;
+      font-size: 1rem;
+      color: inherit;
+      background: #f8fafc;
+    }
+
+    body.dark .search-row input {
+      background: #0f172a;
+      border-color: #334155;
+      color: #e2e8f0;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .filter-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 0.95rem 1.2rem;
+      cursor: pointer;
+      background: #e2e8f0;
+      color: #334155;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .filter-btn.active,
+    .filter-btn:hover {
+      background: #2563eb;
+      color: white;
+    }
+
+    body.dark .filter-btn {
+      background: #334155;
+      color: #cbd5e1;
+    }
+
+    body.dark .filter-btn.active,
+    body.dark .filter-btn:hover {
+      background: #2563eb;
+      color: white;
+    }
+
+    .list-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .item-card {
+      padding: 1.5rem;
+      border-radius: 24px;
+      background: white;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06);
+    }
+
+    body.dark .item-card {
+      background: rgba(15, 23, 42, 0.88);
+      border-color: rgba(71, 85, 105, 0.3);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .company-logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: linear-gradient(135deg, #10b981, #14b8a6);
+      font-weight: 700;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .subtitle-small {
+      margin: 0.4rem 0 0;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    body.dark .subtitle-small {
+      color: #cbd5e1;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 1rem 0;
+      color: #2563eb;
+      font-size: 0.95rem;
+    }
+
+    body.dark .meta {
+      color: #bfdbfe;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+      border: none;
+      border-radius: 16px;
+      padding: 0.9rem 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      min-width: 130px;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .primary-btn {
+      background: #2563eb;
+      color: white;
+    }
+
+    .secondary-btn {
+      background: #e2e8f0;
+      color: #1f2937;
+    }
+
+    body.dark .secondary-btn {
+      background: #334155;
+      color: #cbd5e1;
+    }
+
+    .primary-btn:hover,
+    .secondary-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 0.55rem 0.85rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .status-pending { background: #f8fafc; color: #475569; }
+    .status-interview { background: #e0f2fe; color: #1d4ed8; }
+    .status-offered { background: #dcfce7; color: #166534; }
+    .status-rejected { background: #fee2e2; color: #991b1b; }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 50;
+    }
+
+    .modal-backdrop.open {
+      display: grid;
+    }
+
+    .modal {
+      width: min(520px, 100%);
+      background: white;
+      border-radius: 24px;
+      padding: 1.75rem;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    body.dark .modal {
+      background: #0f172a;
+      border-color: rgba(71, 85, 105, 0.3);
+      color: #e2e8f0;
+    }
+
+    .modal h2 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+
+    .modal p {
+      margin: 0 0 1.5rem;
+      color: #475569;
+    }
+
+    body.dark .modal p {
+      color: #cbd5e1;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: 1px solid #cbd5e1;
+      color: inherit;
+    }
+
+    body.dark .close-btn {
+      border-color: #64748b;
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-row,
+      .search-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <div>
+        <div class="brand">GigIntern</div>
+        <p>Simple internship tracking and application management.</p>
+      </div>
+      <button class="theme-toggle" id="themeToggleBtn">🌙 Dark mode</button>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <a href="#" class="nav-link active" data-section="dashboard">Dashboard</a>
+        <a href="#" class="nav-link" data-section="applications">Applications</a>
+        <a href="#" class="nav-link" data-section="profile">Profile</a>
+        <a href="#" class="nav-link" data-action="logout">Logout</a>
+      </aside>
+
+      <main class="panel">
+        <section class="card" id="dashboardSection">
+          <div class="stats-grid">
+            <div class="stat"><strong id="totalInternships">6</strong> Available internships</div>
+            <div class="stat"><strong id="appliedCount">0</strong> Applied</div>
+            <div class="stat"><strong id="responseRate">0%</strong> Response rate</div>
+            <div class="stat"><strong id="activeApps">0</strong> Active applications</div>
+          </div>
+
+          <div class="card profile-row" id="profileRow">
+            <div class="avatar" id="profileAvatar">U</div>
+            <div>
+              <h2 id="profileName">User</h2>
+              <p id="profileEmail">email@example.com</p>
+              <p><strong id="appliedTotal">0</strong> applications • Response rate <strong id="userResponseRate">0%</strong></p>
+            </div>
+          </div>
+
+          <div class="card search-row" id="searchSection">
+            <input id="searchInput" type="search" placeholder="Search internships..." />
+            <div class="filters">
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="tech">Tech</button>
+              <button class="filter-btn" data-filter="marketing">Marketing</button>
+              <button class="filter-btn" data-filter="remote">Remote</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Opportunities</h2>
+            <div class="list-grid" id="internshipsGrid"></div>
+          </div>
+        </section>
+
+        <section class="card" id="applicationsSection" style="display:none;">
+          <h2>My Applications</h2>
+          <div id="applicationsList"></div>
+        </section>
+
+        <section class="card" id="profileSection" style="display:none;">
+          <h2>Profile</h2>
+          <p>Welcome to your simple internship dashboard. Use the left menu to browse opportunities and review application status.</p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="applyModal">
+    <div class="modal">
+      <h2 id="applyTitle">Apply now</h2>
+      <p id="applyDesc">Confirm application details before submitting.</p>
+      <div class="modal-actions">
+        <button class="primary-btn" id="confirmApplyBtn">Apply</button>
+        <button class="secondary-btn close-btn" id="closeApplyBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="logoutModal">
+    <div class="modal">
+      <h2>Logout</h2>
+      <p>Are you sure you want to end your session?</p>
+      <div class="modal-actions">
+        <button class="secondary-btn close-btn" id="cancelLogout">Cancel</button>
+        <button class="primary-btn" id="confirmLogoutBtn">Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+    const internships = [
+      { id: 1, company: 'TechCorp', logo: 'TC', position: 'Frontend Developer Intern', desc: 'Build responsive UIs with React and modern CSS.', type: 'tech', remote: true, location: 'Remote', duration: '3 months', stipend: '$800/mo' },
+      { id: 2, company: 'MarketPro', logo: 'MP', position: 'Digital Marketing Intern', desc: 'Support campaigns, social media strategy and analytics.', type: 'marketing', remote: true, location: 'Remote', duration: '6 weeks', stipend: '$500/mo' },
+      { id: 3, company: 'DataWorks', logo: 'DW', position: 'Data Analyst Intern', desc: 'Analyze datasets using SQL and Python.', type: 'tech', remote: false, location: 'NYC', duration: '3 months', stipend: '$1000/mo' },
+      { id: 4, company: 'StartupX', logo: 'SX', position: 'Fullstack Intern', desc: 'Work with Node.js, React, and cloud tools.', type: 'tech', remote: true, location: 'Remote', duration: '12 weeks', stipend: '$1200/mo' },
+      { id: 5, company: 'BrandCo', logo: 'BC', position: 'Content Creator Intern', desc: 'Create written and visual content for campaigns.', type: 'marketing', remote: true, location: 'Remote', duration: '2 months', stipend: '$600/mo' },
+      { id: 6, company: 'FinTech Inc', logo: 'FI', position: 'Finance Intern', desc: 'Assist the finance team with analysis and reports.', type: 'finance', remote: false, location: 'Chicago', duration: '3 months', stipend: '$900/mo' }
+    ];
+
+    let applications = JSON.parse(localStorage.getItem('applications') || '[]');
+    let activeFilter = 'all';
+    let selectedInternshipId = null;
+
+    const sections = {
+      dashboard: document.getElementById('dashboardSection'),
+      applications: document.getElementById('applicationsSection'),
+      profile: document.getElementById('profileSection')
+    };
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const applyModal = document.getElementById('applyModal');
+    const logoutModal = document.getElementById('logoutModal');
+    const confirmApplyBtn = document.getElementById('confirmApplyBtn');
+    const closeApplyBtn = document.getElementById('closeApplyBtn');
+    const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+    const cancelLogout = document.getElementById('cancelLogout');
+
+    function applyTheme(theme) {
+      document.body.classList.toggle('dark', theme === 'dark');
+      themeToggleBtn.textContent = theme === 'dark' ? '☀️ Light mode' : '🌙 Dark mode';
+      localStorage.setItem('theme', theme);
+    }
+
+    function loadTheme() {
+      applyTheme(localStorage.getItem('theme') || 'light');
+    }
+
+    function showSection(sectionName) {
+      Object.entries(sections).forEach(([name, element]) => {
+        element.style.display = name === sectionName ? 'block' : 'none';
+      });
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.dataset.section === sectionName);
+      });
+    }
+
+    function renderInternships() {
+      const grid = document.getElementById('internshipsGrid');
+      const searchText = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = internships.filter(job => {
+        return (job.position + job.company + job.desc).toLowerCase().includes(searchText);
+      }).filter(job => {
+        if (activeFilter === 'all') return true;
+        if (activeFilter === 'remote') return job.remote;
+        return job.type === activeFilter;
+      });
+
+      if (!filtered.length) {
+        grid.innerHTML = '<p style="color:#64748b;">No internships match this filter yet.</p>';
+        return;
+      }
+
+      grid.innerHTML = filtered.map(job => {
+        const applied = applications.some(app => app.internshipId === job.id);
+        return `
+          <div class="item-card">
+            <div class="item-header">
+              <div class="company-logo">${job.logo}</div>
+              <div>
+                <div class="title">${job.position}</div>
+                <p class="subtitle-small">${job.company}</p>
+              </div>
+            </div>
+            <p class="subtitle-small">${job.desc}</p>
+            <div class="meta">
+              <span>${job.location}</span>
+              <span>${job.duration}</span>
+              <span>${job.stipend}</span>
+              ${job.remote ? '<span>Remote</span>' : ''}
+            </div>
+            <button class="${applied ? 'secondary-btn' : 'primary-btn'}" ${applied ? 'disabled' : ''} onclick="openApplyModal(${job.id}, '${job.position}', '${job.desc.replace(/'/g, "\\'")}')">
+              ${applied ? 'Applied ✓' : 'Apply'}
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderApplications() {
+      const list = document.getElementById('applicationsList');
+      if (!applications.length) {
+        list.innerHTML = '<p style="color:#64748b;">No applications yet. Apply to an opportunity from the dashboard.</p>';
+        return;
+      }
+
+      list.innerHTML = applications.map(app => {
+        const internship = internships.find(job => job.id === app.internshipId) || {};
+        const statusClass = app.status === 'offered' ? 'status-offered' : app.status === 'interview' ? 'status-interview' : app.status === 'rejected' ? 'status-rejected' : 'status-pending';
+        return `
+          <div class="item-card">
+            <div class="item-header">
+              <div>
+                <div class="title">${internship.position || 'Internship'}</div>
+                <p class="subtitle-small">${internship.company || 'Company'}</p>
+              </div>
+              <span class="status-pill ${statusClass}">${app.status}</span>
+            </div>
+            <p class="subtitle-small">Applied on ${new Date(app.appliedDate).toLocaleDateString()}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openApplyModal(id, title, desc) {
+      selectedInternshipId = id;
+      document.getElementById('applyTitle').textContent = `Apply for ${title}`;
+      document.getElementById('applyDesc').textContent = desc;
+      applyModal.classList.add('open');
+    }
+
+    function closeApplyModal() {
+      applyModal.classList.remove('open');
+      selectedInternshipId = null;
+    }
+
+    function submitApplication() {
+      if (!selectedInternshipId) return;
+      const exists = applications.some(app => app.internshipId === selectedInternshipId);
+      if (exists) return closeApplyModal();
+
+      applications.push({ internshipId: selectedInternshipId, appliedDate: Date.now(), status: 'pending' });
+      localStorage.setItem('applications', JSON.stringify(applications));
+      closeApplyModal();
+      updateStats();
+      renderInternships();
+    }
+
+    function updateStats() {
+      const totalInternships = internships.length;
+      const appliedCount = applications.length;
+      const activeApps = applications.filter(a => a.status === 'pending' || a.status === 'interview').length;
+      const responded = applications.filter(a => a.status !== 'pending').length;
+      document.getElementById('totalInternships').textContent = totalInternships;
+      document.getElementById('appliedCount').textContent = appliedCount;
+      document.getElementById('activeApps').textContent = activeApps;
+      document.getElementById('responseRate').textContent = appliedCount ? `${Math.round((responded / appliedCount) * 100)}%` : '0%';
+      document.getElementById('appliedTotal').textContent = appliedCount;
+      document.getElementById('userResponseRate').textContent = appliedCount ? `${Math.round((responded / appliedCount) * 100)}%` : '0%';
+
+      const name = currentUser ? currentUser.name || currentUser.email.split('@')[0] : 'Guest';
+      const avatar = name.charAt(0).toUpperCase();
+      document.getElementById('profileName').textContent = name;
+      document.getElementById('profileEmail').textContent = currentUser ? currentUser.email : 'not signed in';
+      document.getElementById('profileAvatar').textContent = avatar;
+    }
+
+    function setUpEvents() {
+      document.getElementById('searchInput').addEventListener('input', renderInternships);
+      document.querySelectorAll('.filter-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          activeFilter = button.dataset.filter;
+          document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.toggle('active', btn === button));
+          renderInternships();
+        });
+      });
+
+      navLinks.forEach(link => {
+        link.addEventListener('click', event => {
+          event.preventDefault();
+          const section = link.dataset.section;
+          if (section) showSection(section);
+          if (link.dataset.action === 'logout') showLogout();
+        });
+      });
+
+      themeToggleBtn.addEventListener('click', () => {
+        applyTheme(document.body.classList.contains('dark') ? 'light' : 'dark');
+      });
+
+      closeApplyBtn.addEventListener('click', closeApplyModal);
+      confirmApplyBtn.addEventListener('click', submitApplication);
+      cancelLogout.addEventListener('click', () => logoutModal.classList.remove('open'));
+      confirmLogoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('user');
+        localStorage.removeItem('applications');
+        alert('Logged out. Refresh the page to start fresh.');
+        logoutModal.classList.remove('open');
+      });
+
+      window.addEventListener('click', event => {
+        if (event.target === applyModal) closeApplyModal();
+        if (event.target === logoutModal) logoutModal.classList.remove('open');
+      });
+    }
+
+    function showLogout() {
+      logoutModal.classList.add('open');
+    }
+
+    function initDashboard() {
+      // For demo purposes, set a mock user if none exists
+      if (!currentUser) {
+        const mockUser = { id: 1, name: 'Demo User', email: 'demo@example.com' };
+        localStorage.setItem('user', JSON.stringify(mockUser));
+        currentUser = mockUser;
+      }
+
+      loadTheme();
+      setUpEvents();
+      updateStats();
+      renderInternships();
+      renderApplications();
+      showSection('dashboard');
+    }
+
+    initDashboard();
+  </script>
+</body>
+</html>
