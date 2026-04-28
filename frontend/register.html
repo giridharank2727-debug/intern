@@ -207,6 +207,13 @@
         <label for="password">Password</label>
         <input id="password" type="password" placeholder="••••••••" required />
       </div>
+      <div class="field">
+        <label for="role">Register as</label>
+        <select id="role" required>
+          <option value="student">Student</option>
+          <option value="company">Company</option>
+        </select>
+      </div>
       <button type="submit" class="button">Create Account</button>
     </form>
 
@@ -248,10 +255,11 @@
       button.textContent = 'Creating account...';
 
       try {
-        const response = await fetch('http://localhost:5000/register', {
+        const role = document.getElementById('role').value;
+        const response = await fetch('/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, password })
+          body: JSON.stringify({ name, email, password, role })
         });
         const data = await response.json();
         if (data.success) {
